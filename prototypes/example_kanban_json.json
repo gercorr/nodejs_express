@@ -1,0 +1,68 @@
+{
+    "owner": "ger",
+    "title": "Daily Kanban Board", 
+    "description": "Used for standups",
+    "board_sections": 
+    [	
+        {
+            "title": "Backlog",
+            "tasks": 
+            [	
+                {
+                    "title": "Develop Backend"
+                },
+                {
+                    "title": "Develop Frontend"
+                },
+                {
+                    "title": "Develop Db Scripts"
+                }
+            ]
+        },
+        {
+            "title": "To Do",
+            "tasks": 
+            [	
+                {
+                    "title": "Start Development",
+                    "tasks": 
+                    [	
+                        {
+                            "title": "Start Initial Code Prototype"
+                        },
+                        {
+                            "title": "Setup Database"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "title": "In Dev",
+            "tasks": 
+            [	
+                {
+                    "title": "Develop Infrastructure",
+                    "tasks": 
+                    [	
+                        {
+                            "title": "Setup CI"
+                        },
+                        {
+                            "title": "Setup PCs"
+                        }
+                    ]
+                },
+                {
+                    "title": "Setup Development Software"
+                }
+            ]
+        },
+        {
+            "title": "In Test"
+        },
+        {
+            "title": "Done"
+        }
+    ]
+}
