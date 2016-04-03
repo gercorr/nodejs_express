@@ -1,79 +1,29 @@
 <!DOCTYPE HTML>
 <html>
-   <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-      <title>Simple Agile Planning Board</title>
-      <link rel="stylesheet" href="style.css" type="text/css"/>
-   <body>
-      <div id="board">
-      <div id="todo">
-         <div class="title">To Do</div>
-         <div id="item1" draggable="true">
-            <div class="cardTitle">
-               Learn HTML5
-            </div>
-         </div>
-         <div id="item2" draggable="true">
-            <div class="cardTitle">
-               Learn CSS3
-            </div>
-         </div>
-         <div id="item3" draggable="true">
-            <div class="cardTitle">Make an amazing site
-            </div></div>
-         <div id="item4" draggable="true">
-            <div class="cardTitle">Impress my friends
-            </div></div>
-      </div>
-      <div id="inprogress">
-         <div class="title">In Progress</div>
-      </div>
-      <div id="intest">
-         <div class="title">In Test</div>
-      </div>
-      <div id="done">
-         <div class="title">Done</div>
-      </div>
-	  
-      <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-      <script type="text/javascript">
-         $('document').ready(init);
-         
-                 function init(){
-         		var result;
-            
-            $.get("/get_kanban", function(string) {
-            var result = JSON.parse(string);
-			
-			for (i = 0; i < result.length; i++)
-			{ 
-				$('#item' + (i + 1)).find( ".cardTitle" ).text(result[i].name);
-			}
-			
-         })
-         		
-                     $('#item1, #item2, #item3, #item4').bind('dragstart', function(event) {
-                         event.originalEvent.dataTransfer.setData("text/plain", event.target.getAttribute('id'));
-                     });
-         			
-         			$('#item1, #item2, #item3, #item4').bind('dblclick', function(event) {
-         				 $(this).text('Learn CSS7')
-                     });
-                     
-            // bind the dragover event on the board sections
-                     $('#todo, #inprogress, #intest, #done').bind('dragover', function(event) {
-                         event.preventDefault();
-                     });
-         
-         // bind the drop event on the board sections
-            $('#todo, #inprogress, #intest, #done').bind('drop', function(event) {
-                     var notecard = event.originalEvent.dataTransfer.getData("text/plain");
-                     event.target.appendChild(document.getElementById(notecard));
-         // Turn off the default behaviour
-         // without this, FF will try and go to a URL with your id's name
-                     event.preventDefault();
-         });
-                 }
-      </script>
-   </body>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Simple Agile Planning Board</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+
+    <body>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="kanban.js"></script>
+        
+        <div id="wrapper">
+        </div>
+
+
+        <form id = "updateTaskForm" style="display: none">
+            <input type="text" id="old-title" style="display: none">
+            New Title: <input type="text" id="new-title">
+            <input type="submit" value="Submit">
+        </form>
+        
+        <form id = "saveForm">
+            <input type="submit" value="Save">
+        </form>
+        </br>
+        Double click on a task to rename
+    </body>
 </html>

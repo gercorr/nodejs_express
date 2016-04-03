@@ -4,7 +4,7 @@ module.exports = function(app)
 {
 
 	app.get('/',function(req,res){
-		res.render('index.html')
+		res.render('kanban.html')
 	});
 	 
     app.get('/about',function(req,res){
@@ -29,6 +29,21 @@ module.exports = function(app)
 
 	app.get('/get_kanban', function (req, res) {
 		GetFromMongo('kanban', res);
+	})	
+    
+	app.get('/update_users', function (req, res) {
+        
+        var record = { "name": "modulus admin", "age": 42, "roles": "help" } ;
+        var newValue = { $set: { "roles.$" : "help2" } };
+        
+		UpdateMongo('users', record, newValue);
+	})	
+    
+	app.get('/update_kanban', function (req, res) {
+        
+        var record = req.query ;
+        delete record._id;
+		ReplaceMongo('kanban', record, "ger");
 	})	
 
 	app.get('/insert_users', function (req, res) {
@@ -116,6 +131,101 @@ module.exports = function(app)
 
 		  }
 
+		});
+
+	}
+    
+    
+    
+    
+    function UpdateMongo(collectionName,  record, newValue)
+	{
+
+		var mongodb = require('mongodb');
+
+		//We need to work with "MongoClient" interface in order to connect to a mongodb server.
+		var MongoClient = mongodb.MongoClient;
+
+		// Connection URL. This is where your mongodb server is running.
+		var url = config.mongo.host;
+
+		// Use connect method to connect to the Server
+		MongoClient.connect(url, function (err, db) {
+		  if (err) {
+			console.log('Unable to connect to the mongoDB server. Error:', err);
+		  } else {
+			//HURRAY!! We are connected. :)
+			console.log('Connection established to', url);
+
+			// Get the  collection
+			var collection = db.collection(collectionName);
+
+			// Insert some users
+			collection.updateOne(
+                record,   newValue              
+                , function (err, result) {
+			  if (err) {
+				console.log(err);
+			  } else {
+				console.log('Inserted:', result);
+			  }
+			  //Close connection
+			  db.close();
+			});
+		  }
+		});
+
+	}
+    
+    
+    function ReplaceMongo(collectionName, record, owner)
+	{
+
+		var mongodb = require('mongodb');
+
+		//We need to work with "MongoClient" interface in order to connect to a mongodb server.
+		var MongoClient = mongodb.MongoClient;
+
+		// Connection URL. This is where your mongodb server is running.
+		var url = config.mongo.host;
+
+		// Use connect method to connect to the Server
+		MongoClient.connect(url, function (err, db) {
+		  if (err) {
+			console.log('Unable to connect to the mongoDB server. Error:', err);
+		  } else {
+			//HURRAY!! We are connected. :)
+			console.log('Connection established to', url);
+
+			// Get the  collection
+			var collection = db.collection(collectionName);
+            var ObjectId = mongodb.ObjectId;
+			// Insert some users
+            //try {
+            //    collection.replaceOne(
+            //        { "owner": owner},
+            //        record
+            //    );
+            //} catch (e) {
+            //    print(e);
+            //}
+            
+            collection.replaceOne(
+                { "owner": owner},   record              
+                , function (err, result) {
+			  if (err) {
+				console.log(err);
+			  } else {
+				console.log('Replaced:', result);
+			  }
+			  //Close connection
+			  db.close();
+			});
+            
+            
+            
+            
+		  }
 		});
 
 	}

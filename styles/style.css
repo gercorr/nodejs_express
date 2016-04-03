@@ -1,78 +1,57 @@
-
 body
 {
-font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-#board
+.board
 {
-width: 910px;
-min-height:100px;
-
-position:relative;
+	min-height: 100px;
+	position: relative;
 }
-
-.title
+.board-section-title
 {
-background-color:#52460a;
-text-align:center;
-color:white;
-padding: 2px 0px;
+	background-color: #52460a;
+	color: white;
+	padding: 2px 0px;
+	text-align: center;
 }
-
-#inprogress
+.board-section
 {
-left:302px;
+	background-color: tan;
+	border: 2px solid black;
+	float: left;
+	min-width: 15%;
+	max-width: 25%;
+	min-height: 150px;
 }
-
-#intest
-{
-left:604px;
-}
-#done
-{
-left:906px;
-}
-
-#todo, #inprogress, #intest, #done
-{
-background-color: tan;
-
-position:absolute;
-
-width: 300px;
-min-height:150px;
-border: 2px solid black;
-
-}
-
 *[draggable=true]
 {
-float:left;
-min-width: 50px;
-min-height: 50px;
-border: 2px solid black;
-margin: 10px;
-
-font-weight:bold;
-
-min-height:60px;
-background-image: -webkit-gradient(linear,
-             left top, left bottom,
+	background-image: -moz-linear-gradient(
+ center top,
+ white 63%,
+ rgb(5,161,245) 92%
+ );
+	background-image: -webkit-gradient(linear,
+ left top, left bottom,
 color-stop(0.63, white),
-             color-stop(0.92, rgb(5,161,245)));
-                    background-image:-moz-linear-gradient(
-                        center top,
-                        white 63%,
-                        rgb(5,161,245) 92%
-                    );
-             -webkit-background-size:1px 8px;
-             -moz-background-size:1px 8px;
-             background-size:1px 8px;
-background-repeat:repeat;
+ color-stop(0.92, rgb(5,161,245)));
+	background-repeat: repeat;
+	background-size: 1px 8px;
+	border: 2px solid black;
+	float: left;
+	font-weight: bold;
+	margin: 10px;
+	min-height: 50px;
+	min-height: 60px;
+	min-width: 50px;
+	moz-background-size: 1px 8px;
+	webkit-background-size: 1px 8px;
 }
-
-.cardTitle
+.task-title
 {
-background-color: rgb(255,255,255);
-border:2px solid white;
+	background-color: rgb(255,255,255);
+	border: 2px solid white;
+}
+#wrapper
+{
+    display: inline-block;
 }
