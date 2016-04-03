@@ -88,6 +88,7 @@ function setupBindings() {
         
         $( "#updateTaskForm" ).show();
         $('#old-title').val(task.getAttribute('id'));
+        $('#new-title').val(task.title);
     });
 
     // bind the dragover event on the board sections
