@@ -94,7 +94,7 @@ module.exports = function(app)
 		});
 
 	}
-
+ 
 
 	function GetFromMongo(collectionName, res)
 	{
