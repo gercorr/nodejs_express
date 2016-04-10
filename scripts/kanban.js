@@ -213,6 +213,13 @@ function setupBindings() {
             var tasks = board.columns[0].tasks;
             var newTask = {'title': newTaskTitle};
             tasks.push(newTask);
+            
+            var taskOwnerDOM = document.getElementById(1);//bad
+            
+            var taskDOM = $('<div/>', { 'class': 'task', 'id': elementId++, 'draggable': 'true', 'title': newTaskTitle})
+            taskOwnerDOM.append(taskDOM);
+            var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': newTaskTitle });            
+            taskDOM.append(taskTitleDOM);
         }
         else
         {
