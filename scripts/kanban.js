@@ -45,11 +45,27 @@ function init() {
             boardDOM.append(columnDOM);
             columnDOM.append(columnTitleDOM);
             
-            //this should be recursive
             addTasks(column, columnDOM);
+            
+            if(column.title === 'Backlog')
+            {
+                var taskDOM = $('<div/>', { 'class': 'task', 'id': elementId++,  'title': 'add new task...'})
+                columnDOM.append(taskDOM);
+                var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': 'add new task...' });            
+                taskDOM.append(taskTitleDOM);
+                taskDOM.append('<div class="plus"><i class="fa fa-plus-circle"></i></div>');
+            }
                                         
-        }                        
-        $("#wrapper").append(boardDOM);
+        }         
+        
+        var columnDOM = $('<div/>', {'class': 'board-section', 'id': elementId++, 'title': 'Add New Column...'})      
+        var columnTitleDOM = $('<div/>', {'class': 'board-section-title', 'innerText': 'Add New Column...'});
+      
+        boardDOM.append(columnDOM);
+        columnDOM.append(columnTitleDOM);
+        columnDOM.append('<div class="plus"><i class="fa fa-plus-circle"></i></div>');
+                           
+        $("#wrapper").prepend(boardDOM);
         
         setupBindings();
     })
@@ -77,18 +93,21 @@ function setupBindings() {
         event.originalEvent.dataTransfer.setData("text/plain", event.target.getAttribute('id'));
     });
 
-    $('.task').bind('dblclick', function(event) {
+    $('.task').bind('click', function(event) {
         
         var task = event.target;
-        
-        if(task.className === "task-title" || task.className === "board-section-title")
+        if(task.className === "fa fa-plus-circle")
         {
-            task = event.target.parentElement;
+            task = task.parentElement;            
+        }        
+        if(task.className === "task-title" || task.className === "plus" || task.className === "board-section-title")
+        {
+            task = task.parentElement;
         }
         
         $( "#updateTaskForm" ).show();
         $('#old-title').val(task.getAttribute('id'));
-        $('#new-title').val(task.title);
+        $('#updated-title').val(task.title);
     });
 
     // bind the dragover event on the board sections
@@ -184,17 +203,26 @@ function setupBindings() {
     $("#updateTaskForm").submit(function(e) {       
                
         var taskId = $('#old-title').val();
-        var newTaskTitle = $('#new-title').val();
+        var newTaskTitle = $('#updated-title').val();
         var titleDOM = document.getElementById(taskId);
         
         var taskObj = searchForProperty(board, titleDOM.title);
-        taskObj.title = newTaskTitle;
-        titleDOM.title = newTaskTitle;
         
-        for (i = 0; i < titleDOM.children.length; i++) {
-            if(titleDOM.children[i].className === "task-title")
-            {
-                titleDOM.children[i].innerText = newTaskTitle;
+        if(taskObj == null)
+        {
+            var tasks = board.columns[0].tasks;
+            var newTask = {'title': newTaskTitle};
+            tasks.push(newTask);
+        }
+        else
+        {
+            taskObj.title = newTaskTitle;
+            titleDOM.title = newTaskTitle;
+            for (i = 0; i < titleDOM.children.length; i++) {
+                if(titleDOM.children[i].className === "task-title")
+                {
+                    titleDOM.children[i].innerText = newTaskTitle;
+                }
             }
         }
 

@@ -5,7 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>Simple Agile Planning Board</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
-
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <body>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
         <script type="text/javascript" src="kanban.js"></script>
@@ -14,17 +15,23 @@
         <div id="wrapper">
         </div>
 
-
         <form id = "updateTaskForm" style="display: none">
             <input type="text" id="old-title" style="display: none">
-            New Title: <input type="text" id="new-title">
-            <input type="submit" value="Submit">
+            <div class="updater">
+            <div class="task-updater">
+                <div class="task-title">
+                    <input type="text" id="updated-title">
+                </div>
+                <input type="submit" value="Submit">
+            </div>
+            </div>
         </form>
-        
+              
+        <div>
         <form id = "saveForm">
             <input type="submit" value="Save">
         </form>
-        </br>
+        </div>
         Double click on a task to rename
     </body>
 </html>
