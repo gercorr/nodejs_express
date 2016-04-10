@@ -20,18 +20,29 @@
             <div class="updater">
             <div class="task-updater">
                 <div class="task-title">
-                    <input type="text" id="updated-title">
+                    Task: <input type="text" id="updated-title">
                 </div>
                 <input type="submit" value="Submit">
             </div>
             </div>
         </form>
-              
+        
+        <form id = "updateColumnForm" style="display: none">
+            <input type="text" id="old-column-title" style="display: none">
+            <div class="updater">
+            <div class="column-updater">
+                <div class="board-section-title">
+                    Column: <input type="text" id="updated-column-title">
+                </div>
+                <input type="submit" value="Submit">
+            </div>
+            </div>
+        </form>
+        </br>
         <div>
         <form id = "saveForm">
             <input type="submit" value="Save">
         </form>
         </div>
-        Double click on a task to rename
     </body>
 </html>

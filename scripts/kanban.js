@@ -2,12 +2,12 @@
 //
 //<board>
 //  <board-title></board-title>
-//  <board-section>--has id
-//      <board-section-title></board-section-title>
+//  <column>--has id
+//      <column-title></column-title>
 //      <task>--has id
 //          <task-title></task-title>
 //      </task>
-//  </board-section>
+//  </column>
 //</board>
 
 
@@ -39,27 +39,29 @@ function init() {
         for (var columnIndex  = 0; columnIndex < board.columns.length; columnIndex++) {
             var column = board.columns[columnIndex];
             
-            var columnDOM = $('<div/>', {'class': 'board-section', 'id': elementId++, 'title': column.title})      
-            var columnTitleDOM = $('<div/>', {'class': 'board-section-title', 'innerText': column.title});
+            var columnDOM = $('<div/>', {'class': 'column', 'id': elementId++, 'title': column.title})      
+            var columnTitleDOM = $('<div/>', {'class': 'column-title', 'innerText': column.title});
+            var columnCloseDOM = $('<i/>', {'class': 'fa fa-times'});
             
             boardDOM.append(columnDOM);
+            columnDOM.append(columnCloseDOM);
             columnDOM.append(columnTitleDOM);
             
             addTasks(column, columnDOM);
             
             if(column.title === 'Backlog')
             {
-                var taskDOM = $('<div/>', { 'class': 'task', 'id': elementId++,  'title': 'add new task...'})
-                columnDOM.append(taskDOM);
-                var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': 'add new task...' });            
+                var taskDOM = $('<div/>', { 'class': 'task', 'id': 'task-adder',  'title': 'add new task...'})
+                var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': 'add new task...' });    
+                columnDOM.append(taskDOM);        
                 taskDOM.append(taskTitleDOM);
                 taskDOM.append('<div class="plus"><i class="fa fa-plus-circle"></i></div>');
             }
                                         
         }         
         
-        var columnDOM = $('<div/>', {'class': 'board-section', 'id': elementId++, 'title': 'Add New Column...'})      
-        var columnTitleDOM = $('<div/>', {'class': 'board-section-title', 'innerText': 'Add New Column...'});
+        var columnDOM = $('<div/>', {'class': 'column', 'id': 'column-adder', 'title': 'Add New Column...'})      
+        var columnTitleDOM = $('<div/>', {'class': 'column-title', 'innerText': 'Add New Column...'});
       
         boardDOM.append(columnDOM);
         columnDOM.append(columnTitleDOM);
@@ -78,8 +80,10 @@ function addTasks(taskOwner, taskOwnerDOM){
         for (var taskIndex = 0; taskIndex < taskOwner.tasks.length; taskIndex++) {
             var task = taskOwner.tasks[taskIndex];
             var taskDOM = $('<div/>', { 'class': 'task', 'id': elementId++, 'draggable': 'true', 'title': task.title})
-            taskOwnerDOM.append(taskDOM);
             var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': task.title });            
+            var taskCloseDOM = $('<i/>', {'class': 'fa fa-times'});
+            taskOwnerDOM.append(taskDOM);
+            taskDOM.append(taskCloseDOM);
             taskDOM.append(taskTitleDOM);
             //recursive. tasks can have sub tasks (e.g. user stories)
             addTasks(task, taskDOM);                
@@ -93,37 +97,90 @@ function setupBindings() {
         event.originalEvent.dataTransfer.setData("text/plain", event.target.getAttribute('id'));
     });
 
-    $('.task').bind('click', function(event) {
+    $('.task, .task-adder').bind('click', function(event) {
         
         var task = event.target;
+        if(task.className === "fa fa-times")
+        {
+            return;          
+        }        
         if(task.className === "fa fa-plus-circle")
         {
             task = task.parentElement;            
         }        
-        if(task.className === "task-title" || task.className === "plus" || task.className === "board-section-title")
+        if(task.className === "task-title" || task.className === "plus" || task.className === "column-title")
         {
             task = task.parentElement;
         }
         
-        $( "#updateTaskForm" ).show();
+        $("#updateTaskForm" ).show();
         $('#old-title').val(task.getAttribute('id'));
         $('#updated-title').val(task.title);
+        $("#updateColumnForm" ).hide();
+    });
+    
+    $('.column, .column-adder').bind('click', function(event) {
+        
+        var column = event.target;
+        if(column.className === "fa fa-times")
+        {
+            return;          
+        }        
+        if(column.className === "fa fa-plus-circle")
+        {
+            column = column.parentElement;            
+        }        
+        if(column.className === "plus" || column.className === "column-title")
+        {
+            column = column.parentElement;
+        }
+        if(column.className === "column")
+        {
+            $("#updateColumnForm" ).show().focus();
+            $('#old-column-title').val(column.getAttribute('id'));
+            $('#updated-column-title').val(column.title);
+            $( "#updateTaskForm" ).hide();
+        }
+        
+    });
+    
+    $('.fa-times').bind('click', function(event) {
+        
+        var toBeDeleted = event.target;
+        if(toBeDeleted.className === "fa fa-times")
+        {
+            toBeDeleted = toBeDeleted.parentElement;            
+        }      
+        var success = false;
+        if(toBeDeleted.className === "task")
+        {
+            success = DeleteTaskInJsObject(toBeDeleted);
+        }
+        else if(toBeDeleted.className === "column")
+        {
+            success = DeleteColumnInJsObject(toBeDeleted);
+        }
+        if(success == true)
+        {  
+            var toBeDeletedId = toBeDeleted.getAttribute('id');
+            $('#'+toBeDeletedId).hide();
+        }
     });
 
     // bind the dragover event on the board sections
-    $('.board-section').bind('dragover', function(event) {
+    $('.column').bind('dragover', function(event) {
         event.preventDefault();
     });
 
     // bind the drop event on the board sections
     //DROP IS GOING WITHIN CARD TITLE!!??
-    $('.board-section').bind('drop', function(event) {
+    $('.column').bind('drop', function(event) {
         //get the new holder and task
         var newHolder = event.target;
         var taskId = event.originalEvent.dataTransfer.getData("text/plain"); //can only be task
         var task = document.getElementById(taskId);
         
-        if(newHolder.className === "task-title" || newHolder.className === "board-section-title")
+        if(newHolder.className === "task-title" || newHolder.className === "column-title")
         {
             newHolder = event.target.parentElement;
         }
@@ -133,7 +190,6 @@ function setupBindings() {
             MoveTaskInJsObject(newHolder, task);
             console.log('current json');
             console.log(JSON.stringify(board));
-            //UpdateDb();   
             //update the DOM (must be done after)
             newHolder.appendChild(task);        
         }
@@ -147,8 +203,8 @@ function setupBindings() {
     
     function MoveTaskInJsObject(newHolder, task)
     {
-        var oldTaskHolderTitle = task.parentElement.title;//could be task or board-section
-        var newTaskHolderTitle = newHolder.title;//could be task or board-section
+        var oldTaskHolderTitle = task.parentElement.title;//could be task or column
+        var newTaskHolderTitle = newHolder.title;//could be task or column
         var taskTitle = task.title;
         
         var oldTaskHolderObj = searchForProperty(board, oldTaskHolderTitle);
@@ -162,8 +218,36 @@ function setupBindings() {
         }
         newTaskHolderObj.tasks.push(taskObj);
     }
-    //cant find "Setup Development Software"
+    
+    function DeleteTaskInJsObject(task)
+    {
+        var oldTaskHolderTitle = task.parentElement.title;//could be task or column
+        var taskTitle = task.title;
+        
+        var oldTaskHolderObj = searchForProperty(board, oldTaskHolderTitle);
+        var taskObj = searchForProperty(oldTaskHolderObj, taskTitle);
+        if(typeof taskObj.tasks !== 'undefined' && taskObj.tasks.length > 0)
+        {
+            return false;
+        }
+        var index = oldTaskHolderObj.tasks.indexOf(taskObj);
+        oldTaskHolderObj.tasks.splice(index, 1);
+        return true;
+    }
 
+    function DeleteColumnInJsObject(column)
+    {
+        var columnTitle = column.title;
+        var columnObj = searchForProperty(board, columnTitle);
+        
+        if(typeof columnObj.tasks !== 'undefined' && columnObj.tasks.length > 0)
+        {
+            return false;
+        }
+        var index = board.columns.indexOf(columnObj);
+        board.columns.splice(index, 1);
+        return true;
+    }
     
     function searchForProperty(element, taskHolderTitle)
     {
@@ -207,19 +291,29 @@ function setupBindings() {
         var titleDOM = document.getElementById(taskId);
         
         var taskObj = searchForProperty(board, titleDOM.title);
-        
-        if(taskObj == null)
+        var existingTask = searchForProperty(board, newTaskTitle);
+        if(existingTask != null)
         {
+        }
+        else if(taskObj == null)
+        {
+            if((typeof board.columns[0].tasks  === 'undefined'))
+            {
+                board.columns[0].tasks = [];
+            }
             var tasks = board.columns[0].tasks;
+            
             var newTask = {'title': newTaskTitle};
             tasks.push(newTask);
-            
-            var taskOwnerDOM = document.getElementById(1);//bad
-            
+                        
             var taskDOM = $('<div/>', { 'class': 'task', 'id': elementId++, 'draggable': 'true', 'title': newTaskTitle})
-            taskOwnerDOM.append(taskDOM);
-            var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': newTaskTitle });            
+            var taskTitleDOM = $('<div/>', { 'class': 'task-title', 'innerText': newTaskTitle });          
+            var taskCloseDOM = $('<i/>', {'class': 'fa fa-times'}); 
+            taskDOM.append(taskCloseDOM);  
             taskDOM.append(taskTitleDOM);
+            $( "#task-adder" ).before(taskDOM);      
+            $( "#updateTaskForm" ).hide();
+            setupBindings();//added a new task so need to refresh the bindings
         }
         else
         {
@@ -231,6 +325,50 @@ function setupBindings() {
                     titleDOM.children[i].innerText = newTaskTitle;
                 }
             }
+        }
+
+        
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+        
+    });
+    
+    
+    $("#updateColumnForm").submit(function(e) {       
+               
+        var columnId = $('#old-column-title').val();
+        var newColumnTitle = $('#updated-column-title').val();
+        var titleDOM = document.getElementById(columnId);
+        
+        var columnObj = searchForProperty(board, titleDOM.title);
+        var existingColumn = searchForProperty(board, newColumnTitle);
+        if(existingColumn != null)
+        {
+        }
+        else if(columnObj == null)
+        {
+            var columns = board.columns;
+            
+            var newColumn = {'title': newColumnTitle};
+            columns.push(newColumn);
+                        
+                        
+
+            
+            var columnDOM = $('<div/>', {'class': 'column', 'id': elementId++, 'title': newColumnTitle})      
+            var columnTitleDOM = $('<div/>', {'class': 'column-title', 'innerText': newColumnTitle});
+            var columnCloseDOM = $('<i/>', {'class': 'fa fa-times'});
+            
+            columnDOM.append(columnCloseDOM);
+            columnDOM.append(columnTitleDOM);
+            $( "#column-adder" ).before(columnDOM);      
+            $( "#updateColumnForm" ).hide();
+            
+            setupBindings();//added a new column so need to refresh the bindings
+        }
+        else
+        {
+            columnObj.title = newColumnTitle;
+            titleDOM.title = newColumnTitle;
         }
 
         
