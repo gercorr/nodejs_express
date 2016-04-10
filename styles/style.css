@@ -25,6 +25,7 @@ body
 }
 *[draggable=true]
 {
+	word-break: break-all;
 	background-image: -moz-linear-gradient(
  center top,
  white 63%,
@@ -37,7 +38,6 @@ color-stop(0.63, white),
 	background-repeat: repeat;
 	background-size: 1px 8px;
 	border: 2px solid black;
-	float: left;
 	font-weight: bold;
 	margin: 10px;
 	min-height: 50px;
