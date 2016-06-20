@@ -120,7 +120,7 @@ function setupBindings() {
     });
     
     $('.column, .column-adder').bind('click', function(event) {
-        
+         
         var column = event.target;
         if(column.className === "fa fa-times")
         {
